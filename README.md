@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/vagrant-json-config.svg)](http://badge.fury.io/rb/vagrant-json-config)
+
 # Vagrant JsonConfig plugin
 
 This is a simple Vagrant plugin that loads configuration variables from a json file to be able to dynamically configure
