@@ -11,13 +11,11 @@ module VagrantPlugins
           file = File.read(config_file)
           projects = JSON.parse(file)
 
-          if ENV['PROJECT_KEY']
+          if ENV['PROJECT_KEY'] && projects[ENV['PROJECT_KEY']]
             @project = projects[ENV['PROJECT_KEY']]
           else
-            raise Vagrant::Errors::PluginLoadError, message: "This JsonConfig plugin requires the env variable PROJEKT_KEY to be set to determin the projects config variables."
+            raise Vagrant::Errors::PluginLoadError, message: "This JsonConfig plugin requires the env variable PROJEKT_KEY to be set and a corresponding entry has to be existent in your projects.json file."
           end
-        else
-          raise Vagrant::Errors::PluginLoadError, message: "This JsonConfig plugin requires a project.json in your project dir."
         end
       end
     end
