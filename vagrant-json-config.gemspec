@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = VagrantPlugins::JsonConfig::VERSION
   spec.authors       = ["Jan Schumann"]
   spec.email         = ["jan.schumann@bauerxcel.de"]
-  spec.summary       = %q{Set configuration variables via json.}
-  spec.description   = %q{Set configuration variables via json.}
-  spec.homepage      = "http://github.com/janschumann"
+  spec.summary       = %q{A Vagrant plugin to set configuration variables via json.}
+  spec.description   = %q{A Vagrant plugin to set configuration variables via json.}
+  spec.homepage      = "https://github.com/Bauer-Xcel-Media/vagrant-json-config"
   spec.license       = "MIT"
   spec.files         = %w(README.md LICENSE.txt
                       vagrant-json-config.gemspec
