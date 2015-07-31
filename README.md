@@ -1,6 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/vagrant-json-config.svg)](http://badge.fury.io/rb/vagrant-json-config)
 
-# Vagrant JsonConfig plugin
+# Vagrant json config plugin
 
 This is a simple Vagrant plugin that loads configuration variables from a json file to be able to dynamically configure
 a vagrant machine without changing the actual Vagrantfile.
@@ -13,7 +13,7 @@ Install using standard Vagrant plugin installation methods.
 $ vagrant plugin install vagrant-json-config
 ```
 
-After installing, add your application configuration to your projects.json file in the root of your project
+After installing, add a json file to the root of your project
 
 ```json
 {
@@ -25,22 +25,43 @@ After installing, add your application configuration to your projects.json file 
 
 ```
 
-After that the defined variables can be accessed from the ```config.jsonconfig``` key like the following: 
+Load it in the vagrant file
 
-```
+```ruby
 Vagrant.configure("2") do |config|
   ...
   
-  config.vm.hostame = config.jsonconfig.project['foo'] 
+  config.jsonconfig.load_json "config.json"
 
   ...
 end
 ```
 
-To select the correct key fom the json file, the ```PROJECT_KEY``` environment variable has to be set:
+You may also use a different location. In that cas you will have to specify an absolute path.
 
+If you only want a specific part of the data to be loaded, you may specify a key while loading the file
+
+```ruby
+Vagrant.configure("2") do |config|
+  ...
+  
+  config.jsonconfig.load_json "config.json", ENV["PROJECT_KEY"] 
+
+  ...
+end
 ```
-$ PROJECT_KEY=key vagrant up
+
+
+After that the defined variables can be accessed from the ```config.jsonconfig``` object like the following: 
+
+```ruby
+Vagrant.configure("2") do |config|
+  ...
+  
+  config.vm.hostame = config.jsonconfig.get "foo" 
+
+  ...
+end
 ```
 
 ## Contributing
