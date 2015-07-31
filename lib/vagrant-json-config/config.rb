@@ -1,22 +1,43 @@
+require 'pathname'
+
 module VagrantPlugins
   module JsonConfig
     class Config < Vagrant.plugin("2", :config)
-      attr_accessor :project
+      attr_accessor :data
       def initialize
-        @project = UNSET_VALUE
+        @data = UNSET_VALUE
+      end
 
-        config_file = Dir.pwd + '/projects.json'
+      def load_json(file, key = nil)
+        path = Pathname.new file
 
-        if File.exist?(config_file)
-          file = File.read(config_file)
-          projects = JSON.parse(file)
+        unless path.absolute?
+          path = Pathname.new(Dir.pwd + '/' + file)
+        end
 
-          if ENV['PROJECT_KEY'] && projects[ENV['PROJECT_KEY']]
-            @project = projects[ENV['PROJECT_KEY']]
+        unless path.file?
+          raise Vagrant::Errors::PluginLoadError, message: "The file #{path} does not exist."
+        end
+
+        json = JSON.parse(path.read)
+
+        if key == nil
+          @data = json
+        else
+          if json[key]
+            @data = json[key]
           else
-            raise Vagrant::Errors::PluginLoadError, message: "This JsonConfig plugin requires the env variable PROJEKT_KEY to be set and a corresponding entry has to be existent in your projects.json file."
+            raise Vagrant::Errors::PluginLoadError, message: "The key #{key} does not exist in the json data."
           end
         end
+      end
+
+      def get(key)
+        unless @data[key]
+          raise Vagrant::Errors::PluginLoadError, message: "The key #{key} does not exist in the json data."
+        end
+
+        @data[key]
       end
     end
   end
