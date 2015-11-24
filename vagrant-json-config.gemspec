@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jan Schumann"]
   spec.email         = ["jan.schumann@bauerxcel.de"]
   spec.summary       = %q{A Vagrant plugin to set configuration variables via json.}
-  spec.description   = %q{A Vagrant plugin to set configuration variables via json.}
+  spec.description   = %q{This is a simple Vagrant plugin that loads configuration variables from a json file to be able to dynamically configure a vagrant machine without changing the actual Vagrantfile.}
   spec.homepage      = "https://github.com/Bauer-Xcel-Media/vagrant-json-config"
   spec.license       = "MIT"
   spec.files         = %w(README.md LICENSE.txt
