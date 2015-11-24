@@ -51,6 +51,18 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+By default, no data will be loaded and no error is raised, if a given files does not exsist. To change that behavior,
+add true as the third parameter.
+
+```ruby
+Vagrant.configure("2") do |config|
+  ...
+  
+  config.jsonconfig.load_json "config.json", nil, true 
+
+  ...
+end
+```
 
 After that the defined variables can be accessed from the ```config.jsonconfig``` object like the following: 
 
@@ -63,6 +75,9 @@ Vagrant.configure("2") do |config|
   ...
 end
 ```
+
+Accessing data from the root attribute accessor 'data' is deprecated. Please use the ```get``` function as described
+above.
 
 ## Contributing
 
