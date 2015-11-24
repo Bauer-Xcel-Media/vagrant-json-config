@@ -8,7 +8,7 @@ module VagrantPlugins
         @data = UNSET_VALUE
       end
 
-      def load_json(file, required = false, key = nil)
+      def load_json(file, key = nil, required = false)
         path = Pathname.new file
 
         unless path.absolute?

@@ -23,7 +23,7 @@ describe VagrantPlugins::JsonConfig::Config do
 
   describe "loading json data" do
     it "raises an error if a given file does not exist allthough required" do
-      expect{subject.load_json "missing.json", true}.to raise_error
+      expect{subject.load_json "missing.json", nil, true}.to raise_error
     end
 
     it "accepts absolute path" do
@@ -39,18 +39,18 @@ describe VagrantPlugins::JsonConfig::Config do
     end
 
     it "raises an error if a non existing key is given" do
-      expect{subject.load_json "test.json", true, non_existing_key}.to raise_error
+      expect{subject.load_json "test.json", non_existing_key, true}.to raise_error
     end
 
     it "selects data correctly when an existing key is given" do
-      subject.load_json "test.json", true, existing_key
+      subject.load_json "test.json", existing_key, true
 
       expect(JSON.dump(subject.data)).to eq('{"bar":"baz"}')
     end
 
     it "merges json data when load_json is called multiple times" do
-      subject.load_json "test.json", true, existing_key
-      subject.load_json "test2.json", true
+      subject.load_json "test.json", existing_key, true
+      subject.load_json "test2.json", nil, true
 
       expect(JSON.dump(subject.data)).to eq('{"bar":"baz","foo":{"foo":"faz"}}')
     end
@@ -59,7 +59,7 @@ describe VagrantPlugins::JsonConfig::Config do
 
   describe "retrieving json data" do
     before do
-      subject.load_json "test.json", true, existing_key
+      subject.load_json "test.json", existing_key, true
     end
 
     it "loads correct data" do
