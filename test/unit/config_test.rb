@@ -12,7 +12,8 @@ describe VagrantPlugins::JsonConfig::Config do
   before do
     Dir.chdir ENV["VAGRANT_CWD"]
     File.open('test.json', 'w') { |file| file.write(json) }
-    File.open('test2.json', 'w') { |file| file.write('{"foo":{"foo":"faz"}}' ) }
+    File.open('test2.json', 'w') { |file| file.write('{"foo":{"foo":"faz"}}') }
+    File.open('test_no_json.json', 'w') { |file| file.write('{"foo_bar_baz') }
   end
 
   subject { described_class.new }
@@ -48,13 +49,9 @@ describe VagrantPlugins::JsonConfig::Config do
       expect(JSON.dump(subject.get_all)).to eq('{"bar":"baz"}')
     end
 
-    it "merges json data when load_json is called multiple times" do
-      subject.load_json "test.json", existing_key, true
-      subject.load_json "test2.json", nil, true
-
-      expect(JSON.dump(subject.get_all)).to eq('{"bar":"baz","foo":{"foo":"faz"}}')
+    it "raises an error for non json file content" do
+      expect{subject.load_json "test_no_json.json", nil, true}.to raise_error
     end
-
   end
 
   describe "retrieving json data" do
@@ -71,6 +68,31 @@ describe VagrantPlugins::JsonConfig::Config do
     it "raises an error on non exsiting key" do
       expect{subject.get "sdcsd"}.to raise_error
     end
+
+    it "merges json data when load_json is called multiple times" do
+      subject.load_json "test.json", existing_key, true
+      subject.load_json "test2.json", nil, true
+
+      expect(JSON.dump(subject.get_all)).to eq('{"bar":"baz","foo":{"foo":"faz"}}')
+    end
   end
 
+  describe "load and retrieve data from different keys" do
+    before do
+      subject.load_json "test.json", existing_key, true
+      subject.load_json "test2.json", existing_key, true, "key2"
+    end
+
+    it "loads correct data from the default source" do
+      data = subject.get 'bar', 'default'
+
+      expect(data).to eq("baz")
+    end
+
+    it "loads correct data from a specific source" do
+      data = subject.get 'foo', 'key2'
+
+      expect(data).to eq("faz")
+    end
+  end
 end
