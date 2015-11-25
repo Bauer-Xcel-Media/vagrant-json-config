@@ -20,6 +20,7 @@ describe VagrantPlugins::JsonConfig::Config do
 
   it "does nothing without calling load" do
     expect(subject.get_all).to be(unset_value)
+    # @todo add test if logger has been invoked
   end
 
   describe "loading json data" do
