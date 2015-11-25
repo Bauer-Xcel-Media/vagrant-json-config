@@ -79,6 +79,92 @@ end
 Accessing data from the root attribute accessor 'data' is deprecated. Please use the ```get``` function as described
 above.
 
+## Loding multiple files
+
+### Merging
+
+Instead of merging multiple loded files to one source, the loaded files can be populated to different keys.
+
+Given the following json files:
+
+foo.json
+```json
+{
+  "key": {
+    "foo": "bar",
+    "baz": "bee"
+  }
+}
+
+```
+
+bar.json
+```json
+{
+  "key": {
+    "boo": "foo"
+  }
+}
+
+```
+
+And loading them to the same source as described above 
+
+```ruby
+Vagrant.configure("2") do |config|
+  ...
+
+  config.jsonconfig.load_json "foo.json" 
+  config.jsonconfig.load_json "bar.json"
+   
+  ...
+end
+```
+
+Would merge the two objects, resulting in the following
+
+```ruby
+  ...
+  
+  config.jsonconfig.get "key"
+  >> {
+         "foo": "bar",
+         "baz": "bee",
+         "boo": "foo"    
+     }
+  ...
+```
+
+### Different sources
+
+To load the config to different sources, do the following
+
+```ruby
+Vagrant.configure("2") do |config|
+  ...
+
+  config.jsonconfig.load_json "foo.json", "key", "foodata"
+  config.jsonconfig.load_json "bar.json", "key", "bardata"
+   
+  ...
+end
+```
+
+This will retrieve the data from both files under 'key' in different sources. These can be acessed via
+
+```ruby
+  ...
+  
+  config.jsonconfig.get "baz", "foodata"
+  >> "bee"
+  
+  config.jsonconfig.get "boo", "bardata"
+  >> "foo"
+   
+  ...
+```
+
+
 ## Contributing
 
 1. Fork it ( https://github.com/Bauer-Xcel-Media/vagrant-json-config/fork )

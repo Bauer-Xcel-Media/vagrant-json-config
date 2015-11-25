@@ -1,6 +1,6 @@
-require 'pathname'
+require "pathname"
 
-require 'log4r'
+require "log4r"
 
 module VagrantPlugins
   module JsonConfig
@@ -37,7 +37,7 @@ module VagrantPlugins
       # will be merged in
       #
       # @raises an error if required is true but the file doeas not exists
-      def load_json(file, key = nil, required = false)
+      def load_json(file, key = nil, required = false, datakey = "default")
         path = Pathname.new file
 
         unless path.absolute?
@@ -60,10 +60,19 @@ module VagrantPlugins
             json = json[key]
           end
 
-          if @data == UNSET_VALUE
-            @data = json
+          if json.kind_of?(Hash)
+            if @data == UNSET_VALUE
+              @data = Hash.new
+              @data[datakey] = UNSET_VALUE
+            end
+
+            if @data[datakey] == UNSET_VALUE || @data[datakey] == nil
+              @data[datakey] = json
+            else
+              @data[datakey] = @data[datakey].merge(json)
+            end
           else
-            @data = @data.merge(json)
+            raise Vagrant::Errors::PluginLoadError, message: "Coould not retrieve valid json data from #{file} using #{key} as lookup key."
           end
         end
       end
@@ -71,28 +80,45 @@ module VagrantPlugins
       # get all data from this config
       #
       # @return Hash
-      def get_all
-        @data
+      def get_all(datakey = "default")
+        if @data == UNSET_VALUE
+          @logger.warn "#get_all has been called before any data has been loaded."
+
+          @data
+        else
+          @data[datakey]
+        end
       end
 
       # get data from a given key
       # raises an error, if the key does not exist
       # call has?(key) to test if the key exists
       #
-      # @return Hash
-      def get(key)
-        unless self.has?(key)
-          raise Vagrant::Errors::PluginLoadError, message: "The key #{key} does not exist in ."
-        end
+      # @return Hash|UNSET_VALUE
+      def get(key, from = "default")
+        if @data == UNSET_VALUE
+          @logger.warn "#get has been called before any data has been loaded."
 
-        @data[key]
+          @data
+        else
+          unless self.has?(key, from)
+            raise Vagrant::Errors::PluginLoadError, message: "The key #{key} does not exist in #{from}."
+          end
+
+          @data[from][key]
+        end
       end
 
       # test if a given key exists within the loaded data
       #
       # @return boolean
-      def has?(key)
-        @data.has_key?(key)
+      def has?(key, from = "default")
+        if @data == UNSET_VALUE
+          @logger.warn "#has has been called before any data has been loaded."
+          false
+        else
+          @data[from].has_key?(key)
+        end
       end
     end
   end
