@@ -1,6 +1,6 @@
-require 'pathname'
+require "pathname"
 
-require 'log4r'
+require "log4r"
 
 module VagrantPlugins
   module JsonConfig
@@ -37,7 +37,7 @@ module VagrantPlugins
       # will be merged in
       #
       # @raises an error if required is true but the file doeas not exists
-      def load_json(file, key = nil, required = false)
+      def load_json(file, key = nil, required = false, datakey = "default")
         path = Pathname.new file
 
         unless path.absolute?
@@ -60,10 +60,14 @@ module VagrantPlugins
             json = json[key]
           end
 
-          if @data == UNSET_VALUE
-            @data = json
+          if json.kind_of?(Hash)
+            if @data == UNSET_VALUE
+              @data = json
+            else
+              @data = @data.merge(json)
+            end
           else
-            @data = @data.merge(json)
+            raise Vagrant::Errors::PluginLoadError, message: "Coould not retrieve valid json data from #{file} using #{key} as lookup key."
           end
         end
       end
