@@ -1,18 +1,22 @@
 require 'pathname'
 
+require 'log4r'
+
 module VagrantPlugins
   module JsonConfig
     class Config < Vagrant.plugin("2", :config)
 
       # The complete data as JSON object
       #
-      # @deprecated use function get(key) instead
+      # @deprecated use #get or #get_all instead
       #
       # @return Hash
       attr_accessor :data
 
       def initialize
         @data = UNSET_VALUE
+
+        @logger = Log4r::Logger.new("vagrant::plugins::json-config")
       end
 
       # Overrides the coresponding attr_accessor
@@ -21,8 +25,9 @@ module VagrantPlugins
       #
       # @return Hash
       def data
-        puts "DEPRECATION: Accessing data from the root element accessor is deprecated and will be removed soon."
-        puts "Please use get(key) instead."
+        @logger.warn "DEPRECATION: Accessing data from the root element accessor is deprecated,"
+        @logger.warn "             and will be removed soon. Please use #get or #get_all instead."
+
         @data
       end
 
@@ -61,6 +66,13 @@ module VagrantPlugins
             @data = @data.merge(json)
           end
         end
+      end
+
+      # get all data from this config
+      #
+      # @return Hash
+      def get_all
+        @data
       end
 
       # get data from a given key

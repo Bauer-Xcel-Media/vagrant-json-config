@@ -18,7 +18,7 @@ describe VagrantPlugins::JsonConfig::Config do
   subject { described_class.new }
 
   it "does nothing without calling load" do
-    expect(subject.data).to be(unset_value)
+    expect(subject.get_all).to be(unset_value)
   end
 
   describe "loading json data" do
@@ -29,13 +29,13 @@ describe VagrantPlugins::JsonConfig::Config do
     it "accepts absolute path" do
       subject.load_json ENV["VAGRANT_CWD"] + "/test.json"
 
-      expect(JSON.dump(subject.data)).to eq(json)
+      expect(JSON.dump(subject.get_all)).to eq(json)
     end
 
     it "accepts relative path" do
       subject.load_json "test.json"
 
-      expect(JSON.dump(subject.data)).to eq(json)
+      expect(JSON.dump(subject.get_all)).to eq(json)
     end
 
     it "raises an error if a non existing key is given" do
@@ -45,14 +45,14 @@ describe VagrantPlugins::JsonConfig::Config do
     it "selects data correctly when an existing key is given" do
       subject.load_json "test.json", existing_key, true
 
-      expect(JSON.dump(subject.data)).to eq('{"bar":"baz"}')
+      expect(JSON.dump(subject.get_all)).to eq('{"bar":"baz"}')
     end
 
     it "merges json data when load_json is called multiple times" do
       subject.load_json "test.json", existing_key, true
       subject.load_json "test2.json", nil, true
 
-      expect(JSON.dump(subject.data)).to eq('{"bar":"baz","foo":{"foo":"faz"}}')
+      expect(JSON.dump(subject.get_all)).to eq('{"bar":"baz","foo":{"foo":"faz"}}')
     end
 
   end
