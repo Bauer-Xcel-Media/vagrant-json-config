@@ -62,10 +62,11 @@ module VagrantPlugins
 
           if json.kind_of?(Hash)
             if @data == UNSET_VALUE
-              @data = { datakey => UNSET_VALUE }
+              @data = Hash.new
+              @data[datakey] = UNSET_VALUE
             end
 
-            if @data[datakey] == UNSET_VALUE
+            if @data[datakey] == UNSET_VALUE || @data[datakey] == nil
               @data[datakey] = json
             else
               @data[datakey] = @data[datakey].merge(json)
